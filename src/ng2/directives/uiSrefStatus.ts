@@ -9,7 +9,16 @@ import {anyTrueR, tail, unnestR, Predicate} from "ui-router-core";
 import {Globals, UIRouterGlobals} from "ui-router-core";
 import {Param} from "ui-router-core";
 import {PathFactory} from "ui-router-core";
-import {Subscription, Observable, BehaviorSubject} from "rxjs/Rx";
+import {Subscription} from "rxjs/Subscription";
+import {Observable} from "rxjs/Observable";
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import 'rxjs/add/observable/of';
+import 'rxjs/add/observable/combineLatest';
+import 'rxjs/add/observable/fromPromise';
+import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/operator/concat';
+import 'rxjs/add/operator/map';
 
 /** @internalapi */
 interface TransEvt { evt: string, trans: Transition }
@@ -75,7 +84,7 @@ function spreadToSubPaths(basePath: PathNode[], appendPath: PathNode[]): PathNod
 /**
  * Given a TransEvt (Transition event: started, success, error)
  * and a UISref Target State, return a SrefStatus object
- * which represents the current status of that Sref: 
+ * which represents the current status of that Sref:
  * active, activeEq (exact match), entering, exiting
  *
  * @internalapi

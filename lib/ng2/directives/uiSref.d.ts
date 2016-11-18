@@ -5,7 +5,7 @@ import { Renderer } from "@angular/core";
 import { ParentUIViewInject } from "./uiView";
 import { Obj } from "ui-router-core";
 import { TransitionOptions } from "ui-router-core";
-import { ReplaySubject } from "rxjs/Rx";
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { TargetState } from "ui-router-core";
 import "../rx";
 /**
