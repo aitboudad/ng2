@@ -218,7 +218,7 @@ export class UISrefStatus {
     this._srefs$ = new BehaviorSubject(this.srefs.toArray());
     this._srefChangesSub = this.srefs.changes.subscribe(srefs => this._srefs$.next(srefs));
 
-    let targetStates$: Observable<TargetState[]> =
+    let targetStates$: Observable<any> =
         this._srefs$.switchMap((srefs: UISref[]) =>
             Observable.combineLatest<TargetState[]>(srefs.map(sref => sref.targetState$)));
 
