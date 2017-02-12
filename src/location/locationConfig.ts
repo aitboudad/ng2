@@ -12,4 +12,16 @@ export class Ng2LocationConfig extends BrowserLocationConfig {
   baseHref(href?: string): string {
     return this._locationStrategy.getBaseHref();
   }
+
+  port(): number {
+    if (location.port) {
+      return Number(location.port);
+    }
+
+    return this.protocol() === 'https' ? 443 : 80;
+  }
+
+  protocol(): string {
+    return location.protocol.replace(/:/g, '');
+  }
 }
