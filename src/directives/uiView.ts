@@ -3,7 +3,6 @@ import {
     Component, ComponentFactoryResolver, ViewContainerRef, Input, ComponentRef, Type,
     ReflectiveInjector, ViewChild, Injector, Inject
 } from '@angular/core';
-import {ReflectorReader} from '@angular/core/src/reflection/reflector_reader';
 
 import {
   UIRouter, isFunction, Transition, parse, TransitionHookFn, StateDeclaration, inArray
@@ -25,44 +24,19 @@ export interface ParentUIViewInject {
   fqn: string;
 }
 
+
+export function Resolve(): Function {
+    return function(target: any, prop: string): void {
+        target['__inputs'] = target['__inputs'] || {};
+        target['__inputs'][prop] = prop;
+    };
+}
+
 /** @internalapi */
 interface InputMapping {
   token: string;
   prop: string;
 }
-
-/**
- * Given a component class, gets the inputs of styles:
- *
- * - @Input('foo') _foo
- * - `inputs: ['foo']`
- *
- * @internalapi
- */
-const ng2ComponentInputs = (reflector: ReflectorReader, ng2CompClass: Type<any>) => {
-  /** Get "@Input('foo') _foo" inputs */
-  let props = reflector.propMetadata(ng2CompClass);
-  let _props = Object.keys(props || {})
-      // -> [ { key: string, anno: annotations[] } ] tuples
-      .map(key => ({ key, annoArr: props[key] }))
-      // -> flattened to [ { key: string, anno: annotation } ] tuples
-      .reduce((acc, tuple) => acc.concat(tuple.annoArr.map(anno => ({ key: tuple.key, anno }))), [])
-      // Only Inputs
-      .filter(tuple => tuple.anno instanceof Input)
-      // If they have a bindingPropertyName, i.e. "@Input('foo') _foo", then foo, else _foo
-      .map(tuple => ({ token: tuple.anno.bindingPropertyName || tuple.key, prop: tuple.key }));
-
-  /** Get "inputs: ['foo']" inputs */
-  let inputs = reflector.annotations(ng2CompClass)
-      // Find the ComponentMetadata class annotation
-      .filter(x => x instanceof Component && !!x.inputs)
-      // Get the .inputs string array
-      .map(x => x.inputs)
-      .reduce(flattenR, [])
-      .map(input => ({ token: input, prop: input }));
-
-  return _props.concat(inputs) as InputMapping[];
-};
 
 /**
  * A UI-Router viewport directive, which is filled in by a view (component) on a state.
@@ -152,8 +126,7 @@ export class UIView {
   constructor(
       public router: UIRouter,
       @Inject(UIView.PARENT_INJECT) parent,
-      public viewContainerRef: ViewContainerRef,
-      private reflector: ReflectorReader
+      public viewContainerRef: ViewContainerRef
   ) {
     this.parent = parent;
   }
@@ -284,21 +257,19 @@ export class UIView {
    */
   applyInputBindings(ref: ComponentRef<any>, context: ResolveContext, componentClass) {
     let bindings = this.uiViewData.config.viewDecl['bindings'] || {};
+    Object.assign(bindings, componentClass.prototype['__inputs'] || {});
     let explicitBoundProps = Object.keys(bindings);
 
     // Supply resolve data to matching @Input('prop') or inputs: ['prop']
     let explicitInputTuples = explicitBoundProps
         .reduce((acc, key) => acc.concat([{ prop: key, token: bindings[key] }]), []);
-    let implicitInputTuples = ng2ComponentInputs(this.reflector, componentClass)
-        .filter(tuple => !inArray(explicitBoundProps, tuple.prop));
-
 
     const addResolvable = (tuple: InputMapping) => ({
       prop: tuple.prop,
       resolvable: context.getResolvable(tuple.token),
     });
 
-    explicitInputTuples.concat(implicitInputTuples)
+    explicitInputTuples
         .map(addResolvable)
         .filter(tuple => tuple.resolvable && tuple.resolvable.resolved)
         .forEach(tuple => { ref.instance[tuple.prop] = tuple.resolvable.data });
