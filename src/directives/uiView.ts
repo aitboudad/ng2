@@ -271,6 +271,15 @@ export class UIView {
 
     explicitInputTuples
         .map(addResolvable)
+        .map(tuple => {
+          if (tuple.resolvable && !tuple.resolvable.resolved && tuple.resolvable.policy && tuple.resolvable.policy.async === 'NOWAIT') {
+            tuple.resolvable.promise.then(
+              () => ref.instance[tuple.prop] = tuple.resolvable.data
+            );
+          }
+
+          return tuple;
+        })
         .filter(tuple => tuple.resolvable && tuple.resolvable.resolved)
         .forEach(tuple => { ref.instance[tuple.prop] = tuple.resolvable.data });
 
