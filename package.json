@@ -1,5 +1,5 @@
 {
-  "name": "@uirouter/angular",
+  "name": "@uirouter/angular-ts",
   "description": "State-based routing for Angular",
   "version": "1.0.0-beta.6",
   "scripts": {
