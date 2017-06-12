@@ -10,7 +10,7 @@ import { UIView } from "./directives/uiView";
 import { UrlRuleHandlerFn, TargetState, TargetStateDef, UIRouter, TransitionService } from "@uirouter/core";
 import { _UIROUTER_INSTANCE_PROVIDERS, _UIROUTER_SERVICE_PROVIDERS } from "./providers";
 
-import { ROUTES } from "@angular/router";
+// import { ROUTES } from "@angular/router";
 /** @hidden */ export const UIROUTER_ROOT_MODULE  = new OpaqueToken("UIRouter Root Module");
 /** @hidden */ export const UIROUTER_MODULE_TOKEN = new OpaqueToken("UIRouter Module");
 /** @hidden */ export const UIROUTER_STATES       = new OpaqueToken("UIRouter States");
@@ -37,7 +37,7 @@ export function makeRootProviders(module: StatesModule): Provider[] {
     return [
         { provide: UIROUTER_ROOT_MODULE,         useValue: module,              multi: true},
         { provide: UIROUTER_MODULE_TOKEN,        useValue: module,              multi: true },
-        { provide: ROUTES,                       useValue: module.states || [], multi: true },
+        // { provide: ROUTES,                       useValue: module.states || [], multi: true },
         { provide: ANALYZE_FOR_ENTRY_COMPONENTS, useValue: module.states || [], multi: true },
         { provide: APP_INITIALIZER, useFactory: onTransitionReady, deps: [TransitionService, PLATFORM_ID], multi: true },
     ];
@@ -46,7 +46,7 @@ export function makeRootProviders(module: StatesModule): Provider[] {
 export function makeChildProviders(module: StatesModule): Provider[] {
     return [
         { provide: UIROUTER_MODULE_TOKEN,        useValue: module,              multi: true },
-        { provide: ROUTES,                       useValue: module.states || [], multi: true },
+        // { provide: ROUTES,                       useValue: module.states || [], multi: true },
         { provide: ANALYZE_FOR_ENTRY_COMPONENTS, useValue: module.states || [], multi: true },
     ];
 }
