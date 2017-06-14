@@ -2,12 +2,12 @@
 /** */
 import { Ng2StateDeclaration } from "./interface";
 import {
-  NgModule, OpaqueToken, ModuleWithProviders, ANALYZE_FOR_ENTRY_COMPONENTS, Provider, Injector
+  NgModule, OpaqueToken, ModuleWithProviders, ANALYZE_FOR_ENTRY_COMPONENTS, Provider, Injector, APP_INITIALIZER, PLATFORM_ID,
 } from "@angular/core";
-import { CommonModule, LocationStrategy, HashLocationStrategy, PathLocationStrategy } from "@angular/common";
+import { CommonModule, LocationStrategy, HashLocationStrategy, PathLocationStrategy, isPlatformServer } from "@angular/common";
 import { _UIROUTER_DIRECTIVES } from "./directives/directives";
 import { UIView } from "./directives/uiView";
-import { UrlRuleHandlerFn, TargetState, TargetStateDef, UIRouter } from "@uirouter/core";
+import { UrlRuleHandlerFn, TargetState, TargetStateDef, UIRouter, TransitionService } from "@uirouter/core";
 import { _UIROUTER_INSTANCE_PROVIDERS, _UIROUTER_SERVICE_PROVIDERS } from "./providers";
 
 // import { ROUTES } from "@angular/router";
@@ -16,12 +16,30 @@ import { _UIROUTER_INSTANCE_PROVIDERS, _UIROUTER_SERVICE_PROVIDERS } from "./pro
 /** @hidden */ export const UIROUTER_STATES       = new OpaqueToken("UIRouter States");
 // /** @hidden */ export const ROUTES = UIROUTER_STATES;
 
+export function onTransitionReady(transitionService: TransitionService, plateformId) {
+    if (isPlatformServer(plateformId)) {
+       return () => Promise.resolve();
+    }
+
+    return () => new Promise(resolve => {
+        let eventHooks = [];
+        ['onSuccess', 'onError'].map(hook => {
+            const unsubscriberEventHook = transitionService[hook]({}, (transition) => {
+                eventHooks.map(unsubscriber => unsubscriber());
+                resolve();
+            });
+            eventHooks.push(unsubscriberEventHook);
+        });
+    });
+}
+
 export function makeRootProviders(module: StatesModule): Provider[] {
     return [
         { provide: UIROUTER_ROOT_MODULE,         useValue: module,              multi: true},
         { provide: UIROUTER_MODULE_TOKEN,        useValue: module,              multi: true },
         // { provide: ROUTES,                       useValue: module.states || [], multi: true },
         { provide: ANALYZE_FOR_ENTRY_COMPONENTS, useValue: module.states || [], multi: true },
+        { provide: APP_INITIALIZER, useFactory: onTransitionReady, deps: [TransitionService, PLATFORM_ID], multi: true },
     ];
 }
 
