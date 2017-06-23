@@ -1,0 +1,20 @@
+{
+  "name": "@uirouter/angular",
+  "version": "2.0.0-alpha.1",
+  "description": "",
+  "license": "MIT",
+  "dependencies": {
+    "@uirouter/core": "=5.0.4",
+    "@uirouter/rx": "=0.4.1",
+    "tslib": "^1.7.1"
+  },
+  "peerDependencies": {
+    "@angular/common": "^4.0.0",
+    "@angular/core": "^4.0.0",
+    "@angular/router": "^4.0.0"
+  },
+  "main": "bundles/angular.umd.js",
+  "module": "@uirouter/angular.es5.js",
+  "es2015": "@uirouter/angular.js",
+  "typings": "angular.d.ts"
+}
