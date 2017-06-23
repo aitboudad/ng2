@@ -2,7 +2,7 @@
 /** */
 import { EventEmitter, QueryList } from '@angular/core';
 import { UISref } from './uiSref';
-import { UIRouterGlobals } from '@uirouter/core';
+import { UIRouterGlobals } from '../core/src';
 /**
  * UISref status emitted from [[UISrefStatus]]
  */

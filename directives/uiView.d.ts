@@ -1,7 +1,7 @@
 /** @ng2api @module directives */
 /** */
 import { ViewContainerRef, ComponentRef, Injector, ComponentFactory } from '@angular/core';
-import { UIRouter, Transition, ViewContext, ViewConfig, ActiveUIView, ResolveContext } from '@uirouter/core';
+import { UIRouter, Transition, ViewContext, ViewConfig, ActiveUIView, ResolveContext } from '../core/src';
 import { Ng2ViewConfig } from '../statebuilders/views';
 /** @internalapi These are provide()d as the string UIView.PARENT_INJECT */
 export interface ParentUIViewInject {
